@@ -9,6 +9,10 @@ library(here)
 
 perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 
+# data clean ----
+
+perc_viab_tidy <- rename(perc_viab_raw, Mow = Group_d)
+
 # data visualization ----
 
 ## Flower head width ----
