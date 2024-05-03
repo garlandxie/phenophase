@@ -170,20 +170,35 @@ perc_viab_raw %>%
     ) 
 )
 
-#flower width significantly different between T2, T3, T4
-flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
-summary(flower)
-TukeyHSD(flower)
 
+# statistical analysis -----
 
-#stem width does not vary too much
-stem <- aov(width_stem~ Pheno.x, data=df_filtered)
-summary(stem)
-TukeyHSD(stem)
+## effect of phenophase on flower width ----
 
-#inside or outside effects; inside had higher viability
-tt_environment <- t.test(Measurement ~ Treatment, data = df_filtered)
+# flower width significantly different between T2, T3, T4
+aov_flower <- aov(Width_flower ~ Pheno, data = perc_viab_raw) 
+summary(aov_flower)
+TukeyHSD(aov_flower)
+
+## effect of phenophase on stem width ----
+
+# stem width does not vary too much
+aov_stem <- aov(Width_stem ~ Pheno, data = perc_viab_raw)
+summary(aov_stem)
+TukeyHSD(aov_stem)
+
+## effect of environmental conditions on viability ----
+
+# inside or outside effects; inside had higher viability
+lm_environment <- glm(Perc_viability ~ Treatment, data = perc_viab_ra)
 tt_environment
+
+
+# reviewer concern ----
+# proportional data -> binomal glm
+# three-way interaction
+# marginal means to account for unbalanced sample size
+# sum of squares II or III? 
 
 Full_model <- aov(Measurement~ Pheno.x + Group_d + Treatment + width_flower + Predator, data=df_filtered)
 summary(Full_model)
