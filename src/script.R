@@ -1,30 +1,13 @@
-citation()
-
-
+# libraries -----
 library(ggplot2)
 library(dplyr)
 library(lme4)
 library(lmerTest)
-# Load the data
-data2 <- read.csv("~/Desktop/CD.csv")
-head(data)
-sidra2 <- read.csv("~/Desktop/Sidra2.csv")
-head(sidra2)
+library(here)
 
-sidra2 <- read.csv("~/Desktop/Fallaha ms/Sidra_final.csv")
-sidra3 <- read.csv("~/Desktop/Fallaha ms/Sidra_predator2.csv")
+# import ----
 
-merged_dataset <- merge(sidra2, sidra3, by = "Individual", all = TRUE)
-write <- write.csv(merged_dataset, file = "~/Desktop/Sidra_combined")
-write <- write.csv(sidra3, file = "~/Desktop/Sidra_combined.csv")
-sidra3 <- read.csv("~/Desktop/Fallaha ms/Sidra_combined.csv")
-
-write <- write.csv(df_filtered, file = "~/Desktop/Sidra_ms_supp.csv")
-
-
-install.packages("dplyr")
-library(dplyr)
-
+perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 # Assuming your original data frame is 'df'
 # Replace 'x_column' with the name of your x-axis column
 # Replace 'y_column' with the name of your y-axis column
