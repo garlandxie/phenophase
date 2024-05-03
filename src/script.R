@@ -8,19 +8,31 @@ library(here)
 # import ----
 
 perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
-# Assuming your original data frame is 'df'
-# Replace 'x_column' with the name of your x-axis column
-# Replace 'y_column' with the name of your y-axis column
-df_filtered <- sidra3 %>% filter(!is.na(Pheno.x))
 
-#plot flower head width
-width <- ggplot(df_filtered, aes(x=Pheno.x, y=width_flower)) +
+# exploratory data analysis ----
+
+## flower head width ----
+
+(flower_width <- perc_viab_raw %>%
+   
+  # remove missing values from Pheno since "NA" can show up as a x-axis label
+  filter(!is.na(Pheno)) %>%
+   
+  # show median differences of flower head width across phenophase 2,3,and 4
+  # phenophase 1 was excluded since flower phenology did not occur at this stage
+  ggplot(aes(x = Pheno, y = Width_flower)) + 
   geom_boxplot() +
-  labs(x="Phenophase", y="Flower head width (cm)") +
+  labs(x ="Phenophase", y ="Flower head width (cm)") +
   theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-  theme(panel.background = element_rect(fill = "white"))
-width + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-              axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
+  theme(
+    panel.background = element_rect(fill = "white"),
+    axis.text.x = element_text(size = 14),
+    axis.title.x = element_text(size = 14), 
+    axis.text.y = element_text(size = 14),
+    axis.title.y = element_text(size = 14)
+    )
+)
+  
 
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
