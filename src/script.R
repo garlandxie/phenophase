@@ -13,13 +13,13 @@ perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 
 ## flower head width ----
 
-(flower_width <- perc_viab_raw %>%
+(plot_flower_width <- perc_viab_raw %>%
    
   # remove missing values from Pheno since "NA" can show up as a x-axis label
   filter(!is.na(Pheno)) %>%
    
   # show median differences of flower head width across phenophase 2,3,and 4
-  # phenophase 1 was excluded since flower phenology did not occur at this stage
+  # phenophase 1 was excluded since flower phenology did not occur here
   ggplot(aes(x = Pheno, y = Width_flower)) + 
   geom_boxplot() +
   labs(x ="Phenophase", y ="Flower head width (cm)") +
@@ -33,6 +33,10 @@ perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
     )
 )
   
+## Stem head width -----
+
+
+
 
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
