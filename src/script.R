@@ -55,6 +55,45 @@ perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 )
 
 
+## Percent seed viability ----
+
+# sample size for percent seed viability between inside + outside environment
+perc_viab_raw %>%
+  group_by(Treatment) %>%
+  summarize(sample_size = sum(!is.na(Perc_viability))) %>%
+
+(plot_env <- perc_viab_raw %>%
+
+  # remove missing values from treatment (inside and outside enviromment)
+  # since "NAs" can show up in the x-axis label 
+  filter(!is.na(Treatment)) %>%
+   
+  ggplot(aes(x = Treatment, y = Perc_viability, fill = Treatment)) + 
+  
+  # tried to use boxplots but visually difficult to interpret
+  # try violin plots (for now) since there appears to be many values 
+  # close to zero for the outside environmental conditions
+  geom_violin() + 
+  
+  # show mean differences between percent seed viability between
+  # inside and outside environmental conditions 
+  # cross bar is a bit extravagant, but it works for now
+   stat_summary(fun = "mean",
+                geom = "crossbar",
+                color = "black") + 
+ 
+  labs(
+    x = "Environmental Conditions",
+    y = "Percent seed viability (%)"
+    ) + 
+  
+  # range of percent seed viability should be 0 to 1 
+  ylim(0,1) + 
+   
+  theme_bw()
+)
+  
+  
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
 summary(flower)
@@ -69,14 +108,6 @@ TukeyHSD(stem)
 #inside or outside effects; inside had higher viability
 tt_environment <- t.test(Measurement ~ Treatment, data = df_filtered)
 tt_environment
-environment <- ggplot(df_filtered, aes(x=Treatment, y=Measurement, fill=Treatment)) +
-  geom_boxplot(color="black", fill="white") +
-  theme_bw() +
-  labs(x="Environmental effects post cutting", y="Seed Viability (%)")
-theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-  theme(panel.background = element_rect(fill = "white"))
-environment + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-              axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
 
 df_filtered <- sidra3 %>% filter(!is.na(Predator))
 predator <- ggplot(df_filtered, aes(x=Predator, y=Measurement)) +
