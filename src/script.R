@@ -11,7 +11,7 @@ perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 
 # data visualization ----
 
-## flower head width ----
+## Flower head width ----
 
 (plot_flower_width <- perc_viab_raw %>%
    
@@ -93,6 +93,42 @@ perc_viab_raw %>%
   theme_bw()
 )
   
+## Predator -----
+
+# visualize the effects of predator on the percent seed viability
+(plot_predator <- perc_viab_raw %>%
+  filter(!is.na(Predator)) %>% 
+  ggplot(aes(x = Predator, y = Perc_viability)) +
+  geom_boxplot() +
+  labs(x="Predator", y="Seed Viability (%)") +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    panel.background = element_rect(fill = "white"),
+    axis.text.x = element_text(size = 14),
+    axis.title.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    axis.title.y = element_text(size = 14)
+    ) 
+)
+
+## Decomposed ----
+
+# visualize the effects of decomposition on percent seed viability
+(decomposed <- perc_viab_raw %>%
+  filter(!is.na(Predator)) %>%
+  ggplot(aes(x=Predator)) +
+  geom_bar() +
+  facet_wrap(~Decomposed) +
+  labs(x="Predator", y="Frequency") + 
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 1), 
+    panel.background = element_rect(fill = "white"),
+    axis.text.x = element_text(size = 14),
+    axis.title.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    axis.title.y = element_text(size = 14)
+  )
+)
   
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
@@ -109,23 +145,6 @@ TukeyHSD(stem)
 tt_environment <- t.test(Measurement ~ Treatment, data = df_filtered)
 tt_environment
 
-df_filtered <- sidra3 %>% filter(!is.na(Predator))
-predator <- ggplot(df_filtered, aes(x=Predator, y=Measurement)) +
-  geom_boxplot() +
-  labs(x="Predator", y="Seed Viability (%)") +
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-  theme(panel.background = element_rect(fill = "white"))
-predator + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-              axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
-
-decomposed <- ggplot(df_filtered, aes(x=Predator)) +
-  geom_bar() +
-  facet_wrap(~Decomposed) +
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-  theme(panel.background = element_rect(fill = "white")) +
-  labs(x="Predator", y="Frequency") +
-decomposed + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-                 axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
 
 #
 Full_model <- aov(Measurement~ Pheno.x + Group_d + Treatment + width_flower + Predator, data=df_filtered)
@@ -133,10 +152,6 @@ summary(Full_model)
 TukeyHSD(Full_model)
 
 tt_predator <- t.test(Decomposed ~ Predator, data = sidra3)
-
-
-
-
 
 #effect of environment across all phenophases and start dates
 tt_environment <- t.test(Measurement ~ Treatment, data = data2)
