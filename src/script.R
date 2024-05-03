@@ -129,7 +129,26 @@ perc_viab_raw %>%
     axis.title.y = element_text(size = 14)
   )
 )
-  
+
+## Phenophase on seed viability -----
+
+(plot_phen_viab <- perc_viab_raw %>%
+  filter(!is.na(Pheno)) %>%
+  ggplot(aes(x = Pheno, y = Perc_viability)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) +
+  xlab("Phenophase") + 
+  ylab("Seed viability") + 
+  scale_x_discrete(labels = c("Flowering", "Flowering complete", "Seeds matured")) +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    axis.text.x = element_text(size = 14), 
+    axis.title.x = element_text(size = 14), 
+    axis.text.y = element_text(size = 14), 
+    axis.title.y = element_text(size = 14)
+    ) 
+)
+
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
 summary(flower)
@@ -145,8 +164,6 @@ TukeyHSD(stem)
 tt_environment <- t.test(Measurement ~ Treatment, data = df_filtered)
 tt_environment
 
-
-#
 Full_model <- aov(Measurement~ Pheno.x + Group_d + Treatment + width_flower + Predator, data=df_filtered)
 summary(Full_model)
 TukeyHSD(Full_model)
@@ -156,20 +173,7 @@ tt_predator <- t.test(Decomposed ~ Predator, data = sidra3)
 #effect of environment across all phenophases and start dates
 tt_environment <- t.test(Measurement ~ Treatment, data = data2)
 tt_environment
-ggplot(data, aes(x=Treatment, y=Measurement, fill=Treatment)) +
-  geom_boxplot() +
-  labs(x="Environmental effects post cutting", y="Seed Viability (%)")
 
-boxplot <- ggplot(data, aes(x = Treatment, y = Measurement)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) +
-  theme(panel.background = element_rect(fill = "white")) +
-  xlab("Environmental effects post cutting") + 
-  ylab("Seed viability") +
-  title("Decomposed")
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1))
-boxplot + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-                axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
 
 
 #effect of phenophase
@@ -177,16 +181,7 @@ phenophase_p <- aov(Measurement~ Phenophase, data=data)
 summary(phenophase_p)
 TukeyHSD(phenophase_p)
 data$Phenophase <- as.factor(data$Phenophase)
-boxplot <- ggplot(data, aes(x = Phenophase, y = Measurement)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) +
-  theme(panel.background = element_rect(fill = "white")) +
-  xlab("Phenophase") + 
-  ylab("Seed viability") + 
-  scale_x_discrete(labels = c("Flowering", "Flowering complete", "Seeds matured")) +
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1))
-boxplot + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-                axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
+
 
 
 #effect of group (Day)
