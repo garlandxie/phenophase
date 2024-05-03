@@ -149,6 +149,27 @@ perc_viab_raw %>%
     ) 
 )
 
+## Effect of day on seed viability -----
+
+(plot_day_viab <- perc_viab_raw %>%
+  filter(!is.na(Group_n)) %>%
+  mutate(Group_n = factor(Group_n)) %>%
+  ggplot(aes(x = Group_n, y = Perc_viability)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) +
+  theme(panel.background = element_rect(fill = "white")) +
+  xlab("Testing day (days since cut)") + 
+  ylab("Seed viability") +
+  scale_x_discrete(labels = c("Day 1", "Day 7", "Day 14", "Day 21")) +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    axis.text.x = element_text(size = 14), 
+    axis.title.x = element_text(size = 14), 
+    axis.text.y = element_text(size = 14), 
+    axis.title.y = element_text(size = 14)
+    ) 
+)
+
 #flower width significantly different between T2, T3, T4
 flower <- aov(width_flower~ Pheno.x, data=df_filtered) 
 summary(flower)
@@ -189,16 +210,7 @@ data$Group_n <- as.factor(data$Group_n)
 Group_day <- aov(Measurement~ Group_n, data=data)
 summary(Group_day)
 TukeyHSD(Group_day)
-boxplot <- ggplot(data, aes(x = Group_n, y = Measurement)) +
-  geom_boxplot() +
-  scale_y_continuous(limits = c(0, 1), expand = c(0,0)) +
-  theme(panel.background = element_rect(fill = "white")) +
-  xlab("Testing day (days since cut)") + 
-  ylab("Seed viability") +
-  scale_x_discrete(labels = c("Day 1", "Day 7", "Day 14", "Day 21")) +
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1))
-boxplot + theme(axis.text.x = element_text(size = 14), axis.title.x = element_text(size = 14), 
-                axis.text.y = element_text(size = 14), axis.title.y = element_text(size = 14)) 
+
 
 
 #effect of phenophase, testing date, and treatment
