@@ -204,6 +204,16 @@ tt_environment
 # marginal means to account for unbalanced sample size
 # sum of squares II or III? 
 
+glm_viab <- glm(
+  Perc_viability ~ Pheno*Treatment*Mow, data = perc_viab_tidy,
+  family = binomial(link="logit")
+)
+
+plot(glm_viab)
+
+anova_viab <- car::Anova(glm_viab, type = 2)
+
+
 Full_model <- aov(Measurement~ Pheno.x + Group_d + Treatment + width_flower + Predator, data=df_filtered)
 summary(Full_model)
 TukeyHSD(Full_model)
