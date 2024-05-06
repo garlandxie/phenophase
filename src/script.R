@@ -11,7 +11,13 @@ perc_viab_raw <- read.csv(here("data", "raw_data.csv"))
 
 # data clean ----
 
-perc_viab_tidy <- rename(perc_viab_raw, Mow = Group_d)
+perc_viab_tidy <- perc_viab_raw %>%
+  rename(Mow = Group_d) %>%
+  mutate(
+    Mow = factor(Mow, levels = c("Day 1", "Day 7", "Day 14", "Day 21")),
+    Treatment = factor(Treatment, levels = c("Inside", "Outside")), 
+    Pheno = factor(Pheno, levels = c("P2", "P3", "P4"))
+  )
 
 # data visualization ----
 
@@ -199,24 +205,48 @@ tt_environment
 
 
 # reviewer concern ----
-# proportional data -> binomal glm
-# three-way interaction
-# marginal means to account for unbalanced sample size
-# sum of squares II or III? 
 
+# fit a binomial regression that models proportional data 
+# (i.e., the fraction of viable seeds per 20 seeds from a given flower head)
 glm_viab <- glm(
-  Perc_viability ~ Pheno*Treatment*Mow, data = perc_viab_tidy,
-  family = binomial(link="logit")
+  Perc_viability ~ Pheno*Treatment*Mow, 
+  family = binomial(link="logit"),
+  data = perc_viab_tidy
 )
 
+# check diagnostics for assumptions of binomial regression
+# independence of errors
+# linearity in the logit for continuous variables
+# lack of strongly influential outliers
 plot(glm_viab)
 
-anova_viab <- car::Anova(glm_viab, type = 2)
+# use type II ANOVA adjusted sum of squares for the unbalanced design
+# would like to see global significance of main effects and interactions
+# prior to running pairwise comparisons 
+anova_viab <- car::Anova(glm_viab, type = "II")
+
+# visualize the nature of interactions before doing any statistical comparisons
+emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment)
+emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment, CIs = TRUE)
+
+# calculate estimate marginal means of each environmental condition separately
+# by conditioning on phenophase and mowing frequency
+viab_emm_pheno_t <- emmeans(glm_viab, pairwise ~ Pheno | Treatment)
+viab_emm_mow_t <- emmeans(glm_viab, pairwise ~ Mow | Treatment)
+
+# calculate estimate marginal means using contrasts conditioning 
+# environmental condition
+viab_emm_int <- emmeans(glm_viab, ~ Mow*Pheno)
+pairs_viab <- contrast(viab_emm_int, interaction = c("consec", "poly"))
+  
+perc_viab_tidy %>%
+  filter(!is.na(Mow)) %>%
+  ggplot(aes(x = Pheno, y = Perc_viability)) + 
+  geom_boxplot() + 
+  facet_wrap(~Mow) + 
+  ylim(0,1)
 
 
-Full_model <- aov(Measurement~ Pheno.x + Group_d + Treatment + width_flower + Predator, data=df_filtered)
-summary(Full_model)
-TukeyHSD(Full_model)
 
 tt_predator <- t.test(Decomposed ~ Predator, data = sidra3)
 
