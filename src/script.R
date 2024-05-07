@@ -99,29 +99,6 @@ perc_viab_raw %>%
     ) 
 )
 
-# statistical analysis -----
-
-## effect of phenophase on flower width ----
-
-# flower width significantly different between T2, T3, T4
-aov_flower <- aov(Width_flower ~ Pheno, data = perc_viab_raw) 
-summary(aov_flower)
-TukeyHSD(aov_flower)
-
-## effect of phenophase on stem width ----
-
-# stem width does not vary too much
-aov_stem <- aov(Width_stem ~ Pheno, data = perc_viab_raw)
-summary(aov_stem)
-TukeyHSD(aov_stem)
-
-## effect of environmental conditions on viability ----
-
-# inside or outside effects; inside had higher viability
-lm_environment <- glm(Perc_viability ~ Treatment, data = perc_viab_ra)
-tt_environment
-
-
 # reviewer concern ----
 
 # fit a binomial regression that models proportional data 
