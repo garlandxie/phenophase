@@ -19,9 +19,9 @@ perc_viab_tidy <- perc_viab_raw %>%
     Pheno = factor(Pheno, levels = c("P2", "P3", "P4"))
   )
 
-# Data visualization: percent seed viability ----
+# exploratory data analysis: percent seed viability ----
 
-## Environmental condition ----
+## environmental condition ----
 
 # sample size for percent seed viability between inside + outside environment
 perc_viab_raw %>%
@@ -59,7 +59,7 @@ perc_viab_raw %>%
   theme_bw()
 )
 
-## Phenophase  -----
+## phenophase  -----
 
 (plot_phen_viab <- perc_viab_raw %>%
   filter(!is.na(Pheno)) %>%
@@ -78,7 +78,7 @@ perc_viab_raw %>%
     ) 
 )
 
-## Day -----
+## day -----
 
 (plot_day_viab <- perc_viab_raw %>%
   filter(!is.na(Group_n)) %>%
@@ -99,7 +99,9 @@ perc_viab_raw %>%
     ) 
 )
 
-# reviewer concern ----
+# statistical analyses: percent seed viability ----
+
+## model fit ----
 
 # fit a binomial regression that models proportional data 
 # (i.e., the fraction of viable seeds per 20 seeds from a given flower head)
@@ -115,6 +117,8 @@ glm_viab <- glm(
 # lack of strongly influential outliers
 plot(glm_viab)
 
+## anova ----
+
 # use type II ANOVA adjusted sum of squares for the unbalanced design
 # would like to see global significance of main effects and interactions
 # prior to running pairwise comparisons 
@@ -123,6 +127,8 @@ anova_viab <- car::Anova(glm_viab, type = "II")
 # check reference grid for unbalanced sample sizes 
 ref_grid_viab <- ref_grid(glm_viab)
 ref_grid_viab@grid
+
+## pairwise comparisons ----
 
 # visualize the nature of interactions before doing any statistical comparisons
 emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment)
