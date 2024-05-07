@@ -4,6 +4,7 @@ library(dplyr)
 library(lme4)
 library(lmerTest)
 library(here)
+library(car)
 
 # import ----
 
@@ -125,7 +126,7 @@ plot(glm_viab)
 anova_viab <- car::Anova(glm_viab, type = "II")
 
 # check reference grid for unbalanced sample sizes 
-ref_grid_viab <- ref_grid(glm_viab)
+ref_grid_viab <- emmeans::ref_grid(glm_viab)
 ref_grid_viab@grid
 
 ## pairwise comparisons ----
@@ -142,7 +143,7 @@ viab_emm_mow_t <- emmeans(glm_viab, pairwise ~ Mow | Treatment)
 # calculate estimate marginal means for the interaction between
 # mowing and phenophase
 viab_emm_int <- emmeans(glm_viab, ~ Mow*Pheno)
-pairs_viab <- contrast(viab_emm_int, interaction = c("consec", "poly"))
+pairs_viab <- emmeans::contrast(viab_emm_int, interaction = c("consec", "poly"))
 
 # visualize the effects of mowing and phenophase
 # to confirm results provided by the interaction contrasts  
