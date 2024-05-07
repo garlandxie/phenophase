@@ -234,18 +234,24 @@ emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment, CIs = TRUE)
 viab_emm_pheno_t <- emmeans(glm_viab, pairwise ~ Pheno | Treatment)
 viab_emm_mow_t <- emmeans(glm_viab, pairwise ~ Mow | Treatment)
 
-# calculate estimate marginal means using contrasts conditioning 
-# environmental condition
+# calculate estimate marginal means for the interaction between
+# mowing and phenophase
 viab_emm_int <- emmeans(glm_viab, ~ Mow*Pheno)
 pairs_viab <- contrast(viab_emm_int, interaction = c("consec", "poly"))
-  
+
+# visualize the effects of mowing and phenophase
+# to confirm results provided by the interaction contrasts  
 perc_viab_tidy %>%
   filter(!is.na(Mow)) %>%
   ggplot(aes(x = Pheno, y = Perc_viability)) + 
   geom_boxplot() + 
+  geom_point(alpha = 0.1) + 
   facet_wrap(~Mow) + 
-  ylim(0,1)
-
+  ylim(0,1) +
+  labs(
+    x = "Phenophase",
+    y = "Seed Viability (%) per flower head") + 
+  theme_bw()
 
 
 tt_predator <- t.test(Decomposed ~ Predator, data = sidra3)
