@@ -225,6 +225,10 @@ plot(glm_viab)
 # prior to running pairwise comparisons 
 anova_viab <- car::Anova(glm_viab, type = "II")
 
+# check reference grid for unbalanced sample sizes 
+ref_grid_viab <- ref_grid(glm_viab)
+ref_grid_viab@grid
+
 # visualize the nature of interactions before doing any statistical comparisons
 emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment)
 emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment, CIs = TRUE)
