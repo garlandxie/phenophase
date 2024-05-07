@@ -112,28 +112,41 @@ glm_viab <- glm(
   data = perc_viab_tidy
 )
 
+# calculate dispersion parameter to determine evidence of 
+# overdispersion or underdispersion
+sum(residuals(glm_viab, "pearson")^2) / glm_viab$df.residual
+
+# refit binomial regression to account for underdispersion
+# using the quasibinomial family 
+glm_viab_und <- glm(
+  Perc_viability ~ Pheno*Treatment*Mow, 
+  family = quasibinomial(link="logit"),
+  data = perc_viab_tidy
+)
+
 # check diagnostics for assumptions of binomial regression
 # independence of errors
 # linearity in the logit for continuous variables
 # lack of strongly influential outliers
 plot(glm_viab)
+plot(glm_viab_und)
 
 ## anova ----
 
 # use type II ANOVA adjusted sum of squares for the unbalanced design
 # would like to see global significance of main effects and interactions
 # prior to running pairwise comparisons 
-anova_viab <- car::Anova(glm_viab, type = "II")
+anova_viab <- car::Anova(glm_viab_und, type = "II")
 
 # check reference grid for unbalanced sample sizes 
-ref_grid_viab <- emmeans::ref_grid(glm_viab)
+ref_grid_viab <- emmeans::ref_grid(glm_viab_und)
 ref_grid_viab@grid
 
 ## pairwise comparisons ----
 
 # visualize the nature of interactions before doing any statistical comparisons
-emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment)
-emmeans::emmip(glm_viab, Mow ~ Pheno | Treatment, CIs = TRUE)
+emmeans::emmip(glm_viab_und, Mow ~ Pheno | Treatment)
+emmeans::emmip(glm_viab_und, Treatment ~ Pheno | Mow)
 
 # calculate estimate marginal means of each environmental condition separately
 # by conditioning on phenophase and mowing frequency
@@ -141,9 +154,20 @@ viab_emm_pheno_t <- emmeans(glm_viab, pairwise ~ Pheno | Treatment)
 viab_emm_mow_t <- emmeans(glm_viab, pairwise ~ Mow | Treatment)
 
 # calculate estimate marginal means for the interaction between
+
 # mowing and phenophase
-viab_emm_int <- emmeans(glm_viab, ~ Mow*Pheno)
-pairs_viab <- emmeans::contrast(viab_emm_int, interaction = c("consec", "poly"))
+emm_mow_pheno <- emmeans(glm_viab_und, ~ Mow*Pheno)
+pairs_mow_pheno <- emmeans::contrast(
+  emm_mow_pheno, 
+  interaction = c("consec", "poly")
+  )
+
+# pheno and treatment
+emm_pheno_trt <- emmeans(glm_viab_und, ~ Pheno*Treatment)
+pairs_pheno_trt <- emmeans::contrast(
+  emm_pheno_trt, 
+  interaction = c("poly", "consec")
+)
 
 # visualize the effects of mowing and phenophase
 # to confirm results provided by the interaction contrasts  
@@ -153,6 +177,18 @@ perc_viab_tidy %>%
   geom_boxplot() + 
   geom_point(alpha = 0.1) + 
   facet_wrap(~Mow) + 
+  ylim(0,1) +
+  labs(
+    x = "Phenophase",
+    y = "Seed Viability (%) per flower head") + 
+  theme_bw()
+
+perc_viab_tidy %>%
+  filter(!is.na(Mow)) %>%
+  ggplot(aes(x = Pheno, y = Perc_viability)) + 
+  geom_boxplot() + 
+  geom_point(alpha = 0.1) + 
+  facet_wrap(~Treatment) + 
   ylim(0,1) +
   labs(
     x = "Phenophase",
