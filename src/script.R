@@ -19,53 +19,9 @@ perc_viab_tidy <- perc_viab_raw %>%
     Pheno = factor(Pheno, levels = c("P2", "P3", "P4"))
   )
 
-# data visualization ----
+# Data visualization: percent seed viability ----
 
-## Flower head width ----
-
-(plot_flower_width <- perc_viab_raw %>%
-   
-  # remove missing values from Pheno since "NA" can show up as a x-axis label
-  filter(!is.na(Pheno)) %>%
-   
-  # show median differences of flower head width across phenophase 2,3,and 4
-  # phenophase 1 was excluded since flower phenology did not occur here
-  ggplot(aes(x = Pheno, y = Width_flower)) + 
-  geom_boxplot() +
-  labs(x ="Phenophase", y ="Flower head width (cm)") +
-  theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) +
-  theme(
-    panel.background = element_rect(fill = "white"),
-    axis.text.x = element_text(size = 14),
-    axis.title.x = element_text(size = 14), 
-    axis.text.y = element_text(size = 14),
-    axis.title.y = element_text(size = 14)
-    )
-)
-  
-## Stem head width -----
-
-(plot_stem_width <- perc_viab_raw %>%
-   
-  # remove missing values from Pheno since "NA" can show up as a x-axis label
-  filter(!is.na(Pheno)) %>%
-   
-  # show median differences of stem width across phenophase 2,3,and 4
-  # phenophase 1 was excluded since flower phenology did not occur here
-  ggplot(aes(x = Pheno, y = Width_stem)) +
-  geom_boxplot() +
-  labs(x ="Phenophase", y ="Stem width (cm)") + 
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 1),
-    axis.text.x = element_text(size = 14),
-    axis.title.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    axis.title.y = element_text(size = 14)
-  )
-)
-
-
-## Percent seed viability ----
+## Environmental condition ----
 
 # sample size for percent seed viability between inside + outside environment
 perc_viab_raw %>%
@@ -102,45 +58,8 @@ perc_viab_raw %>%
    
   theme_bw()
 )
-  
-## Predator -----
 
-# visualize the effects of predator on the percent seed viability
-(plot_predator <- perc_viab_raw %>%
-  filter(!is.na(Predator)) %>% 
-  ggplot(aes(x = Predator, y = Perc_viability)) +
-  geom_boxplot() +
-  labs(x="Predator", y="Seed Viability (%)") +
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 1),
-    panel.background = element_rect(fill = "white"),
-    axis.text.x = element_text(size = 14),
-    axis.title.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    axis.title.y = element_text(size = 14)
-    ) 
-)
-
-## Decomposed ----
-
-# visualize the effects of decomposition on percent seed viability
-(decomposed <- perc_viab_raw %>%
-  filter(!is.na(Predator)) %>%
-  ggplot(aes(x=Predator)) +
-  geom_bar() +
-  facet_wrap(~Decomposed) +
-  labs(x="Predator", y="Frequency") + 
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 1), 
-    panel.background = element_rect(fill = "white"),
-    axis.text.x = element_text(size = 14),
-    axis.title.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    axis.title.y = element_text(size = 14)
-  )
-)
-
-## Phenophase on seed viability -----
+## Phenophase  -----
 
 (plot_phen_viab <- perc_viab_raw %>%
   filter(!is.na(Pheno)) %>%
@@ -159,7 +78,7 @@ perc_viab_raw %>%
     ) 
 )
 
-## Effect of day on seed viability -----
+## Day -----
 
 (plot_day_viab <- perc_viab_raw %>%
   filter(!is.na(Group_n)) %>%
@@ -179,7 +98,6 @@ perc_viab_raw %>%
     axis.title.y = element_text(size = 14)
     ) 
 )
-
 
 # statistical analysis -----
 
