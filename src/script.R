@@ -141,7 +141,7 @@ anova_viab <- car::Anova(glm_viab_und, type = "II", test.statistic = "F")
 ref_grid_viab <- emmeans::ref_grid(glm_viab_und)
 ref_grid_viab@grid
 
-## pairwise comparisons ----
+## contrast coding ----
 
 # visualize the nature of interactions before doing any statistical comparisons
 emmeans::emmip(glm_viab_und, Mow ~ Pheno | Treatment)
@@ -178,7 +178,14 @@ pairs_pheno_trt_tidy <- pairs_pheno_trt %>%
       "P3 Inside - P3 Outside",
       "P4 Inside - P4 Outside"
     )
-  )
+  ) %>%
+  mutate(
+    back_estimate = boot::inv.logit(estimate), 
+    back_estimate = round(back_estimate, digits = 2), 
+    
+    back_se = boot::inv.logit(SE), 
+    back_se = round(back_se, digits = 2)
+  ) 
 
 # visualize the effects of mowing and phenophase
 # to confirm results provided by the interaction contrasts  
@@ -208,15 +215,21 @@ pairs_pheno_trt_tidy <- pairs_pheno_trt %>%
     theme_bw()
 )
 
+# data visualization ----
+
+## interaction contrast - phenophase per week ----
 
 emm_mow_pheno_df <- emm_mow_pheno %>%
   as.data.frame() %>%
   mutate(
     back_emmean = boot::inv.logit(emmean), 
-    back_emmean = round(back_emmean, digits = 2)
-    ) %>% 
-   dplyr::filter(Mow %in% c("Day 7", "Day 14", "Day 21")) %>%
-   mutate(
+    back_emmean = round(back_emmean, digits = 2),
+    
+    back_lcl = boot::inv.logit(asymp.LCL), 
+    back_ucl = boot::inv.logit(asymp.UCL)
+  ) %>% 
+  dplyr::filter(Mow %in% c("Day 7", "Day 14", "Day 21")) %>%
+  mutate(
     Mow = case_when(
       Mow == "Day 7"  ~ "Week 1 (Days 1 -7)", 
       Mow == "Day 14" ~ "Week 2 (Days 7 - 14)", 
@@ -227,11 +240,8 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
       Pheno == "P3" ~ "Flowering completed", 
       Pheno == "P4" ~ "Seeds matured", 
       TRUE ~ Pheno)
-   )
+  )
 
-# data visualization ----
-
-## interaction contrast - phenophase per week ----
 (plot_pheno_per_week <- perc_viab_tidy %>%
   mutate(Mow = as.character(Mow)) %>%
   filter(!is.na(Mow) & Mow %in% c("Day 7", "Day 14", "Day 21")) %>%
@@ -250,10 +260,9 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
     )
   ) %>%
   ggplot(aes(x = Pheno, y = Perc_viability)) + 
-  geom_point(alpha = 0.1) + 
+  geom_point(alpha = 0.2) + 
   geom_point(
     aes(x = Pheno, y = back_emmean), 
-    color = "red", 
     size = 2.5, 
     shape = "triangle", 
     data = emm_mow_pheno_df
@@ -266,14 +275,48 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
   theme_bw() 
 )
 
+
+## interaction contrast - phenophase and storage ----
+emm_pheno_trt_df <- emm_pheno_trt %>%
+  as.data.frame() %>%
+  mutate(
+    back_emmean = boot::inv.logit(emmean), 
+    back_emmean = round(back_emmean, digits = 2),
+    
+    back_lcl = boot::inv.logit(asymp.LCL), 
+    back_ucl = boot::inv.logit(asymp.UCL)
+  ) %>%
+  mutate(
+    Pheno = case_when(
+      Pheno == "P2" ~ "Flowering", 
+      Pheno == "P3" ~ "Flowering completed", 
+      Pheno == "P4" ~ "Seeds matured", 
+      TRUE ~ Pheno)
+  )
+
 (plot_pheno_trt_int <- perc_viab_tidy %>%
+  mutate(
+    Pheno = case_when(
+      Pheno == "P2" ~ "Flowering", 
+      Pheno == "P3" ~ "Flowering completed", 
+      Pheno == "P4" ~ "Seeds matured", 
+      TRUE ~ Pheno)
+    ) %>% 
   dplyr::filter(!is.na(Pheno)) %>%
   ggplot(aes(x = Treatment, y = Perc_viability)) +
-  geom_boxplot() + 
+  geom_point(alpha = 0.1) + 
+  geom_point(
+    aes(x = Treatment, y = back_emmean), 
+      size = 2.5, 
+      shape = "triangle", 
+      color = "red", 
+      data = emm_pheno_trt_df
+    ) + 
+  ylim(0,1) + 
   facet_wrap(~Pheno) + 
   labs(
     x = "Storage Environment", 
-    y = "Percent seed viability (%)"
+    y = "Percent seed viability per flower head (%)"
     ) + 
   theme_bw()
 )
@@ -289,6 +332,33 @@ anova_viab %>%
   row.names = FALSE
 )
 
+pheno_per_week %>%
+  as.data.frame() %>%
+  janitor::clean_names() %>%
+  mutate(
+    estimate = round(estimate, digits = 2),
+    se = round(se, digits = 2),
+    z_ratio = round(z_ratio, digits = 2)
+    ) %>%
+  write.csv(
+    file = here("output", "pheno_per_week.csv"), 
+    row.names = FALSE
+  )
+
+pheno_over_time %>%
+  as.data.frame() %>%
+  janitor::clean_names() %>%
+  mutate(
+    estimate = round(estimate, digits = 2),
+    se = round(se, digits = 2),
+    z_ratio = round(z_ratio, digits = 2), 
+    p_value = round(p_value, digits = 2)
+  ) %>%
+  write.csv(
+    file = here("output", "pheno_over_time.csv"), 
+    row.names = FALSE
+  )
+
 ggsave(
   filename = here("output", "plot_pheno_per_week.png"), 
   plot = plot_pheno_per_week, 
@@ -298,12 +368,11 @@ ggsave(
   height = 5
 )
 
-
 ggsave(
   filename = here("output", "plot_pheno_trt_int.png"), 
   plot = plot_pheno_trt_int, 
   device = "png", 
   units = "in", 
   width = 7, 
-  height = 5
+  height = 4
 )
