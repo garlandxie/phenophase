@@ -260,21 +260,31 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
     )
   ) %>%
   ggplot(aes(x = Pheno, y = Perc_viability)) + 
-  geom_point(alpha = 0.2) + 
+  geom_jitter(width = 0.1, alpha = 0.2) + 
   geom_point(
     aes(x = Pheno, y = back_emmean), 
     size = 2.5, 
     shape = "triangle", 
+    color = "red", 
     data = emm_mow_pheno_df
       ) +  
   facet_wrap(~Mow, nrow = 3, ncol = 1) + 
-  ylim(0,1) +
   labs(
     x = "Phenophase",
-    y = "Seed Viability (%) per flower head") + 
-  theme_bw() 
+    y = "Viability (%) of 20 seeds per flower head") + 
+  theme_bw() + 
+  theme(
+    axis.text.x = element_text(size = 10),
+    axis.title.x = element_text(
+    margin = margin(t = 10, r = 0, b = 0, l = 0),
+    size = 12),
+  
+    axis.text.y = element_text(size = 10),
+    axis.title.y = element_text(
+    margin = margin(t = 0, r = 10, b = 0, l = 0),
+    size = 12)
+    )
 )
-
 
 ## interaction contrast - phenophase and storage ----
 emm_pheno_trt_df <- emm_pheno_trt %>%
@@ -316,9 +326,9 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
   facet_wrap(~Pheno) + 
   labs(
     x = "Storage Environment", 
-    y = "Percent seed viability per flower head (%)"
+    y = "Viability (%) of 20 seeds per flower head"
     ) + 
-  theme_bw()
+  theme_bw() 
 )
 
 # save to disk -----
@@ -364,7 +374,7 @@ ggsave(
   plot = plot_pheno_per_week, 
   device = "png", 
   units = "in", 
-  width = 4, 
+  width = 4.5, 
   height = 5
 )
 
