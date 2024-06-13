@@ -314,7 +314,7 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
     ) %>% 
   dplyr::filter(!is.na(Pheno)) %>%
   ggplot(aes(x = Treatment, y = Perc_viability)) +
-  geom_point(alpha = 0.1) + 
+  geom_jitter(width = 0.1, alpha = 0.1) + 
   geom_point(
     aes(x = Treatment, y = back_emmean), 
       size = 2.5, 
@@ -322,13 +322,23 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
       color = "red", 
       data = emm_pheno_trt_df
     ) + 
-  ylim(0,1) + 
   facet_wrap(~Pheno) + 
   labs(
     x = "Storage Environment", 
     y = "Viability (%) of 20 seeds per flower head"
     ) + 
-  theme_bw() 
+  theme_bw() + 
+  theme(
+    axis.text.x = element_text(size = 10),
+    axis.title.x = element_text(
+      margin = margin(t = 10, r = 0, b = 0, l = 0),
+      size = 12),
+    
+    axis.text.y = element_text(size = 10),
+    axis.title.y = element_text(
+      margin = margin(t = 0, r = 10, b = 0, l = 0),
+      size = 12)
+  )
 )
 
 # save to disk -----
