@@ -310,6 +310,7 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
     back_lcl = boot::inv.logit(asymp.LCL), 
     back_ucl = boot::inv.logit(asymp.UCL)
   ) %>%
+  
   mutate(
     Pheno = case_when(
       Pheno == "P2" ~ "Flower open (P2)", 
@@ -322,11 +323,19 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
         "Flower open (P2)", 
         "Flower maturation (P3)",
         "Dehiscence (P4)")
-      )
+      ),
+    
+    Treatment = case_when(
+      Treatment == "Inside" ~ "Lab", 
+      Treatment == "Outside" ~ "Field",
+      TRUE ~ Treatment),
+    
+    Treatment = factor(Treatment, levels = c("Lab", "Field"))
   )
 
 (plot_pheno_trt_int <- perc_viab_tidy %>%
   mutate(
+    
     Pheno = case_when(
       Pheno == "P2" ~ "Flower open (P2)", 
       Pheno == "P3" ~ "Flower maturation (P3)", 
@@ -338,7 +347,14 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
         "Flower open (P2)", 
         "Flower maturation (P3)",
         "Dehiscence (P4)")
-      )
+      ),
+    
+    Treatment = as.character(Treatment), 
+    Treatment = case_when(
+      Treatment == "Inside" ~ "Lab", 
+      Treatment == "Outside" ~ "Field",
+      TRUE ~ Treatment),
+    Treatment = factor(Treatment, levels = c("Lab", "Field"))
     ) %>% 
   dplyr::filter(!is.na(Pheno)) %>%
   ggplot(aes(x = Treatment, y = Perc_viability)) +
