@@ -312,19 +312,33 @@ emm_pheno_trt_df <- emm_pheno_trt %>%
   ) %>%
   mutate(
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno)
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+    
+    Pheno = factor(
+      Pheno, levels = c(
+        "Flower open (P2)", 
+        "Flower maturation (P3)",
+        "Dehiscence (P4)")
+      )
   )
 
 (plot_pheno_trt_int <- perc_viab_tidy %>%
   mutate(
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno)
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+    
+    Pheno = factor(
+      Pheno, levels = c(
+        "Flower open (P2)", 
+        "Flower maturation (P3)",
+        "Dehiscence (P4)")
+      )
     ) %>% 
   dplyr::filter(!is.na(Pheno)) %>%
   ggplot(aes(x = Treatment, y = Perc_viability)) +
