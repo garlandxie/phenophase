@@ -235,11 +235,19 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
       Mow == "Day 14" ~ "Week 2 (Days 7 - 14)", 
       Mow == "Day 21" ~ "Week 3 (Days 14 - 21)", 
       TRUE ~ Mow),
+    
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno)
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno), 
+    
+    Pheno = factor(
+      Pheno, levels = c(
+        "Flower open (P2)", 
+        "Flower maturation (P3)",
+        "Dehiscence (P4)")
+      )
   )
 
 (plot_pheno_per_week <- perc_viab_tidy %>%
@@ -253,12 +261,18 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
      TRUE ~ Mow),
     Mow = factor(Mow),
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+    Pheno = factor(
+      Pheno, levels = c(
+        "Flower open (P2)", 
+        "Flower maturation (P3)",
+        "Dehiscence (P4)")
+      )
     )
-  ) %>%
+   %>%
   ggplot(aes(x = Pheno, y = Perc_viability)) + 
   geom_jitter(width = 0.1, alpha = 0.2) + 
   geom_point(
@@ -384,7 +398,7 @@ ggsave(
   plot = plot_pheno_per_week, 
   device = "png", 
   units = "in", 
-  width = 4.5, 
+  width = 5, 
   height = 5
 )
 
