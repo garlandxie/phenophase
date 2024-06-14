@@ -92,11 +92,17 @@ emm_stem_width_df <- emm_stem_width %>%
   mutate(
     emmean = round(emmean, digits = 2),
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering Completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno)
-  ) 
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+      
+    Pheno = factor(Pheno, levels = c(
+      "Flower open (P2)",
+      "Flower maturation (P3)", 
+      "Dehiscence (P4)")
+      )
+  )
 
 pairs_sw_p2_p3 <- pairs_stem_width %>%
   filter(contrast == "P2 - P3") %>%
@@ -117,10 +123,16 @@ pairs_sw_p3_p4 <- pairs_stem_width %>%
   dplyr::filter(!is.na(Pheno)) %>%
   mutate(
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering Completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno)
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+    
+    Pheno = factor(Pheno, levels = c(
+      "Flower open (P2)",
+      "Flower maturation (P3)", 
+      "Dehiscence (P4)")
+      )
     ) %>%
   ggplot(aes(x = Pheno, y = Width_stem)) + 
   geom_jitter(width = 0.2, alpha = 0.1) + 
@@ -180,11 +192,17 @@ emm_flower_width_df <- emm_flower_width %>%
   mutate(
     emmean = round(emmean, digits = 2),
     Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering Completed", 
-      Pheno == "P4" ~ "Seeds matured", 
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
       TRUE ~ Pheno
-    )
+    ),
+    
+    Pheno = factor(Pheno, levels = c(
+      "Flower open (P2)", 
+      "Flower maturation (P3)", 
+      "Dehiscence (P4)")
+      )
   )
   
 pairs_fw_p2_p3 <- pairs_flower_width %>%
@@ -217,10 +235,16 @@ table(perc_viab_tidy$Width_flower,perc_viab_tidy$Pheno)
 (plot_flower_width <- perc_viab_tidy %>%
     dplyr::filter(!is.na(Pheno)) %>%
     mutate(Pheno = case_when(
-      Pheno == "P2" ~ "Flowering", 
-      Pheno == "P3" ~ "Flowering Completed", 
-      Pheno == "P4" ~ "Seeds matured", 
-      TRUE ~ Pheno) 
+      Pheno == "P2" ~ "Flower open (P2)", 
+      Pheno == "P3" ~ "Flower maturation (P3)", 
+      Pheno == "P4" ~ "Dehiscence (P4)", 
+      TRUE ~ Pheno),
+      
+      Pheno = factor(Pheno, levels = c(
+        "Flower open (P2)", 
+        "Flower maturation (P3)", 
+        "Dehiscence (P4)")
+        )
       ) %>%
     ggplot(aes(x = Pheno, y = Width_flower)) + 
     geom_jitter(width = 0.2, alpha = 0.1) + 
