@@ -1,0 +1,10 @@
+"mow_poly","pheno_del_eff","estimate","se","df","z_ratio","p_value"
+"linear","P2 effect",-64.35,4927.95,Inf,-0.01,0.99
+"quadratic","P2 effect",-4.36,1763.53,Inf,0,1
+"cubic","P2 effect",7.77,2610.67,Inf,0,1
+"linear","P3 effect",36.33,2463.97,Inf,0.01,0.99
+"quadratic","P3 effect",2.95,881.76,Inf,0,1
+"cubic","P3 effect",-4.12,1305.34,Inf,0,1
+"linear","P4 effect",28.03,2463.97,Inf,0.01,0.99
+"quadratic","P4 effect",1.41,881.76,Inf,0,1
+"cubic","P4 effect",-3.66,1305.33,Inf,0,1

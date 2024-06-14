@@ -1,0 +1,7 @@
+"mow_consec","pheno_poly","estimate","se","df","z_ratio","p_value"
+"Day 7 - Day 1","linear",2.71,0.61,Inf,4.47,7.68036644484519e-06
+"Day 14 - Day 7","linear",8.44,680.58,Inf,0.01,0.990100209647103
+"Day 21 - Day 14","linear",6.56,1763.53,Inf,0,0.997032592477281
+"Day 7 - Day 1","quadratic",-2.67,1.07,Inf,-2.49,0.0127247478742453
+"Day 14 - Day 7","quadratic",-9.74,680.59,Inf,-0.01,0.988586744043936
+"Day 21 - Day 14","quadratic",-8.57,1763.53,Inf,0,0.996124236504028
