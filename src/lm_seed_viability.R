@@ -228,14 +228,8 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
     back_lcl = boot::inv.logit(asymp.LCL), 
     back_ucl = boot::inv.logit(asymp.UCL)
   ) %>% 
-  dplyr::filter(Mow %in% c("Day 7", "Day 14", "Day 21")) %>%
   mutate(
-    Mow = case_when(
-      Mow == "Day 7"  ~ "Week 1 (Days 1 -7)", 
-      Mow == "Day 14" ~ "Week 2 (Days 7 - 14)", 
-      Mow == "Day 21" ~ "Week 3 (Days 14 - 21)", 
-      TRUE ~ Mow),
-    
+  
     Pheno = case_when(
       Pheno == "P2" ~ "Flower open (P2)", 
       Pheno == "P3" ~ "Flower maturation (P3)", 
@@ -251,15 +245,8 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
   )
 
 (plot_pheno_per_week <- perc_viab_tidy %>%
-  mutate(Mow = as.character(Mow)) %>%
-  filter(!is.na(Mow) & Mow %in% c("Day 7", "Day 14", "Day 21")) %>%
+  dplyr::filter(!is.na(Mow)) %>%
   mutate(
-    Mow = case_when(
-      Mow == "Day 7"  ~ "Week 1 (Days 1 -7)", 
-      Mow == "Day 14" ~ "Week 2 (Days 7 - 14)", 
-      Mow == "Day 21" ~ "Week 3 (Days 14 - 21)", 
-     TRUE ~ Mow),
-    Mow = factor(Mow),
     Pheno = case_when(
       Pheno == "P2" ~ "Flower open (P2)", 
       Pheno == "P3" ~ "Flower maturation (P3)", 
@@ -282,13 +269,13 @@ emm_mow_pheno_df <- emm_mow_pheno %>%
     color = "red", 
     data = emm_mow_pheno_df
       ) +  
-  facet_wrap(~Mow, nrow = 3, ncol = 1) + 
+  facet_wrap(~Mow) + 
   labs(
     x = "Phenophase",
     y = "Viability (%) of 20 seeds per flower head") + 
   theme_bw() + 
   theme(
-    axis.text.x = element_text(size = 10),
+    axis.text.x = element_text(size = 10, angle = 70, vjust = 0.7, hjust = 0.7),
     axis.title.x = element_text(
     margin = margin(t = 10, r = 0, b = 0, l = 0),
     size = 12),
